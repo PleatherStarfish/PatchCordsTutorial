@@ -1,0 +1,63 @@
+.draggable {
+  width: 200px;
+  height: 100px;
+  min-height: 10px;
+  background-color: lightblue;
+  border: solid 2px black;
+  color: white;
+  border-radius: 0.75em;
+  padding: 1%;
+  user-select: none;
+  position: absolute;
+  -webkit-transform: translate(0px, 0px);
+          transform: translate(0px, 0px);
+}
+.button {
+  background-color: black;
+  border: none;
+  color: white;
+  padding: 10px;
+  width: 128px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin-bottom: 10px;
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+  cursor: pointer;
+  position: absolute;
+}
+.button:hover {
+  background-color: blue;
+  color: white;
+}
+#patchCords {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  stroke-linecap: round;
+  z-index: 100;
+}
+#flex {
+  display: flex;
+  display: -webkit-flex;
+  position: relative;
+  top: 50%;
+  transform: perspective(1px) translateY(-50%);
+}
+#inner {
+  padding: 0 20px;
+  height:30px;
+  line-height:30px;
+  outline:none;
+  font-size: 18pt;
+  display: inline-block;
+  margin: auto;
+  color: black;
+}
+[contenteditable=true]:empty:before {
+  content: attr(placeholder);
+  display: block; /* For Firefox */
+}
