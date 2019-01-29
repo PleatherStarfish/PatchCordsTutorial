@@ -39,13 +39,15 @@ window.addEventListener('click', function (event) {
     
     // Add the new line ID to the divs object
     divs[selectedDiv].push(`line${patchCordCounter}`);
+    console.log(cords);
 
     // Add the target DIVs location to the list indexed to the line ID
     cords[`line${patchCordCounter}`] = [{[selectedDiv]: [currentSelectionX, currentSelectionY]}, "->"];
-    
+    console.log(cords);
     patchCordActive = true; 
-    patchCordCounter += 1;
   }
+
+
   // ====== CLICK AGAIN INSIDE THE SAME DIV (PATCH CORD ACTIVE) ======
   else if (document.getElementById("main").contains(event.target) 
        && (patchCordActive)
@@ -56,10 +58,11 @@ window.addEventListener('click', function (event) {
   {
       deleteCord();
       divs[selectedDiv].pop();
-      delete cords[`line${patchCordCounter-1}`]
+      delete cords[`line${patchCordCounter}`]
       patchCordActive = false;
-      patchCordCounter -= 1;
   }
+
+
   // ====== CLICK INSIDE A DIF DIV (PATCH CORD ACTIVE) ======
   else if (document.getElementById("main").contains(event.target) 
        && (patchCordActive)
@@ -69,36 +72,40 @@ window.addEventListener('click', function (event) {
       ) 
   {
       deleteCord();
-      divs[event.target.id].push(`line${patchCordCounter-1}`);
-      cords[`line${patchCordCounter-1}`].push({[event.target.id]: [event.target.getBoundingClientRect().x, event.target.getBoundingClientRect().y]});
-      
+      divs[event.target.id].push(`line${patchCordCounter}`);
+      cords[`line${patchCordCounter}`].push({[event.target.id]: [event.target.getBoundingClientRect().x, event.target.getBoundingClientRect().y]});
+
+      // Get the first and only key in each object
       let first = v => v[Object.keys(v)[0]];
 
-      let x1 = first(cords[`line${patchCordCounter-1}`][0]);
-      let y1 = first(cords[`line${patchCordCounter-1}`][0]);
-      let x2 = first(cords[`line${patchCordCounter-1}`][2]);
-      let y2 = first(cords[`line${patchCordCounter-1}`][2]);
-
-      console.log(x1, y1, x2, y2);
+      let x1 = first(cords[`line${patchCordCounter}`][0]);
+      let y1 = first(cords[`line${patchCordCounter}`][0]);
+      let x2 = first(cords[`line${patchCordCounter}`][2]);
+      let y2 = first(cords[`line${patchCordCounter}`][2]);
 
       drawLine(x1[0], y1[1], x2[0], y2[1]);
 
       patchCordActive = false;
-      console.log(cords);
+      patchCordCounter += 1;
   }
+
+
   // ====== CLICK OUTSIDE A DIV (PATCH CORD ACTIVE) ======
   else if (patchCordActive)
   {
     deleteCord();
     divs[selectedDiv].pop();
-    delete cords[`line${patchCordCounter-1}`]
+    delete cords[`line${patchCordCounter}`]
     patchCordActive = false;
-    patchCordCounter -= 1;
   }
+
+
   // ====== CLICK OUTSIDE A DIV (PATCH CORD INACTIVE) ======
   else if (!patchCordActive) { 
     // pass
   }
+
+
   // ====== FALLBACK ======
   else {
     throw "Patch-cord logic fell through to the error condition!";
@@ -132,7 +139,25 @@ interact('.draggable')
       'translate(' + x + 'px, ' + y + 'px)';
     target.setAttribute('data-x', x);
     target.setAttribute('data-y', y);
-    console.log(divs[event.target.getAttribute('id')]);
+
+    let movingCords = divs[target.id];
+    let movingDiv = target.id;
+    for (const pc of movingCords) {
+      // Just get one of the cords attached to a div
+      let oneCord = document.getElementById(pc);
+
+      if (Object.keys(cords[pc][0])[0] == movingDiv) {
+        oneCord.setAttribute('x1', x);
+        oneCord.setAttribute('y1', y);
+      }
+      else if (Object.keys(cords[pc][2])[0] == movingDiv) {
+        oneCord.setAttribute('x2', x);
+        oneCord.setAttribute('y2', y);
+      }
+      else {
+        throw "oneCord.setAttribute fell through to the error condition"
+      }
+    }
   }
 
 
@@ -155,12 +180,7 @@ function createDiv() {
     divs[div.id] = [];
     divCounter += 1;
   
-    // innerHTML should include text input
-    // div.innerHTML = '<input type="text" id="text" value="text">';
-    // div.lastChild.className += "text-input";
-
     div.innerHTML = "<div id='flex'><div id='inner' contenteditable='true' onclick='this.focus()' placeholder='Enter text here...'></div></div>";
-    // div.lastChild.className += "text-input";
 }
 
 function drawLine(x1, y1, x2, y2) {
@@ -173,8 +193,7 @@ function drawLine(x1, y1, x2, y2) {
     newLine.setAttribute('stroke-width', '6');
     document.getElementById("patchCords")
             .appendChild(newLine)
-            .setAttribute("id", "patchCord" + patchCordCounter);
-    cords[`line${patchCordCounter}`] = {};
+            .setAttribute("id", "line" + patchCordCounter);
 }
 
 function deleteCord() {
