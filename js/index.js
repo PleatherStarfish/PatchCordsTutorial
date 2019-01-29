@@ -35,7 +35,7 @@ window.addEventListener('click', function (event) {
     currentSelectionY = event.target.getBoundingClientRect().y;
     let mouse_x = event.clientX;     // Get the horizontal coordinate
     let mouse_y = event.clientY;
-    drawLine(currentSelectionX, currentSelectionY, mouse_x, mouse_y);
+    drawLine(currentSelectionX + 100, currentSelectionY + 103, mouse_x, mouse_y);
     
     // Add the new line ID to the divs object
     divs[selectedDiv].push(`line${patchCordCounter}`);
@@ -83,7 +83,7 @@ window.addEventListener('click', function (event) {
       let x2 = first(cords[`line${patchCordCounter}`][2]);
       let y2 = first(cords[`line${patchCordCounter}`][2]);
 
-      drawLine(x1[0], y1[1], x2[0], y2[1]);
+      drawLine(x1[0] + 100, y1[1] + 103, x2[0] + 100, y2[1]);
 
       patchCordActive = false;
       patchCordCounter += 1;
@@ -147,11 +147,11 @@ interact('.draggable')
       let oneCord = document.getElementById(pc);
 
       if (Object.keys(cords[pc][0])[0] == movingDiv) {
-        oneCord.setAttribute('x1', x);
-        oneCord.setAttribute('y1', y);
+        oneCord.setAttribute('x1', x + 100);
+        oneCord.setAttribute('y1', y + 103);
       }
       else if (Object.keys(cords[pc][2])[0] == movingDiv) {
-        oneCord.setAttribute('x2', x);
+        oneCord.setAttribute('x2', x + 100);
         oneCord.setAttribute('y2', y);
       }
       else {
@@ -159,7 +159,6 @@ interact('.draggable')
       }
     }
   }
-
 
 function createDiv() {
     let div = document.createElement('div');
@@ -189,14 +188,14 @@ function drawLine(x1, y1, x2, y2) {
     newLine.setAttribute('y1', y1);
     newLine.setAttribute('x2', x2);
     newLine.setAttribute('y2', y2);
-    newLine.setAttribute('stroke', "black");
-    newLine.setAttribute('stroke-width', '6');
-    document.getElementById("patchCords")
+    newLine.setAttribute('stroke',  'black');
+    newLine.setAttribute('stroke-width', '4');
+    document.getElementById('patchCords')
             .appendChild(newLine)
-            .setAttribute("id", "line" + patchCordCounter);
+            .setAttribute('id', 'line' + patchCordCounter);
 }
 
 function deleteCord() {
-  const select = document.getElementById("patchCords");
+  const select = document.getElementById('patchCords');
   select.removeChild(select.lastChild);
 }
