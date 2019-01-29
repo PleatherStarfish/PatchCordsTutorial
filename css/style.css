@@ -1,6 +1,13 @@
+/****** Set the height and width of divs ******/
+:root {
+  --height: 0px;
+  --width: 0px;
+}
+
+/****** Drag-and-dropable divs ******/
 .draggable {
-  width: 200px;
-  height: 100px;
+  height: var(--height);
+  width: var(--width);
   border: solid 2px black;
   border-radius: 0.75em;
   user-select: none;
@@ -8,6 +15,8 @@
   -webkit-transform: translate(0px, 0px);
           transform: translate(0px, 0px);
 }
+
+/****** Create-div button ******/
 .button {
   background-color: black;
   border: none;
@@ -28,6 +37,8 @@
   background-color: blue;
   color: white;
 }
+
+/****** SVG patch cords ******/
 #patchCords {
   position: absolute;
   width: 100%;
@@ -36,6 +47,8 @@
   stroke-linecap: round;
   z-index: 100;
 }
+
+/****** Editable divs ******/
 #flex {
   display: flex;
   display: -webkit-flex;

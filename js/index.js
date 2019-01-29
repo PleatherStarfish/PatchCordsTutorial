@@ -1,18 +1,10 @@
+const divs = { }; // Object to hold div IDs as keys to lines
+const cords = { }; // Object to hold lines as keys to indices
+const height = 100; // height of divs
+const width = 200; // width of divs
 
-// let divs = { 
-//   "div0" : [line0, line1],
-//   "div1" : [line0],
-//   "div2" : [line1],
-//   "div3" : [],
-// }
-
-// let cords = { 
-//   line0 : {div0: [x1, y1], div1: [x2, y2]},
-//   line2 : {div0: [x1, y1], div2: [x2, y2]]
-// }
-
-const divs = { };
-const cords = { };
+document.getElementsByClassName('draggable').height = '500';
+document.getElementsByClassName('draggable').width = '100';
 
 let patchCordActive = false;
 let currentSelectionX;
@@ -20,30 +12,32 @@ let currentSelectionY;
 let divCounter = 0;
 let patchCordCounter = 0;
 let selectedDiv;
+let root = document.documentElement;
+
+let notTextDiv = (divId) => {return true ? (divId != "inner") && (divId != "flex") : false};
 
 window.addEventListener('click', function (event) {
 
   // ====== CLICK INSIDE DIV (PATCH CORD INACTIVE) ======
   if (document.getElementById("main").contains(event.target) 
       && !(patchCordActive)
-      && (event.target.id != "inner")
-      && (event.target.id != "flex")
+      && notTextDiv(event.target.id)
       )
   {
     selectedDiv = event.target.id
     currentSelectionX = event.target.getBoundingClientRect().x;
     currentSelectionY = event.target.getBoundingClientRect().y;
-    let mouse_x = event.clientX;     // Get the horizontal coordinate
+    let mouse_x = event.clientX;     // Get the div coordinates
     let mouse_y = event.clientY;
-    drawLine(currentSelectionX + 100, currentSelectionY + 103, mouse_x, mouse_y);
+
+    // Draw line to curser
+    drawLine(currentSelectionX + (width/2), currentSelectionY + height, mouse_x, mouse_y);
     
     // Add the new line ID to the divs object
     divs[selectedDiv].push(`line${patchCordCounter}`);
-    console.log(cords);
 
     // Add the target DIVs location to the list indexed to the line ID
     cords[`line${patchCordCounter}`] = [{[selectedDiv]: [currentSelectionX, currentSelectionY]}, "->"];
-    console.log(cords);
     patchCordActive = true; 
   }
 
@@ -51,8 +45,7 @@ window.addEventListener('click', function (event) {
   // ====== CLICK AGAIN INSIDE THE SAME DIV (PATCH CORD ACTIVE) ======
   else if (document.getElementById("main").contains(event.target) 
        && (patchCordActive)
-       && (event.target.id != "inner")
-       && (event.target.id != "flex")
+       && notTextDiv(event.target.id)
        && (event.target.id == selectedDiv)
       ) 
   {
@@ -66,8 +59,7 @@ window.addEventListener('click', function (event) {
   // ====== CLICK INSIDE A DIF DIV (PATCH CORD ACTIVE) ======
   else if (document.getElementById("main").contains(event.target) 
        && (patchCordActive)
-       && (event.target.id != "inner")
-       && (event.target.id != "flex")
+       && notTextDiv(event.target.id)
        && (event.target.id != selectedDiv)
       ) 
   {
@@ -83,7 +75,7 @@ window.addEventListener('click', function (event) {
       let x2 = first(cords[`line${patchCordCounter}`][2]);
       let y2 = first(cords[`line${patchCordCounter}`][2]);
 
-      drawLine(x1[0] + 100, y1[1] + 103, x2[0] + 100, y2[1]);
+      drawLine(x1[0] + (width/2), y1[1] + height, x2[0] + (width/2), y2[1]);
 
       patchCordActive = false;
       patchCordCounter += 1;
@@ -114,8 +106,11 @@ window.addEventListener('click', function (event) {
 });
 
 window.addEventListener('mousemove', function (event) {
+
+  // If there's an active patch cord, center one end on the curser
+
   if (patchCordActive) {
-    let mouse_x = event.clientX;     // Get the horizontal coordinate
+    let mouse_x = event.clientX;
     let mouse_y = event.clientY;
     document.getElementById("patchCords").lastElementChild.setAttribute('x2', mouse_x);
     document.getElementById("patchCords").lastElementChild.setAttribute('y2', mouse_y);
@@ -147,11 +142,11 @@ interact('.draggable')
       let oneCord = document.getElementById(pc);
 
       if (Object.keys(cords[pc][0])[0] == movingDiv) {
-        oneCord.setAttribute('x1', x + 100);
-        oneCord.setAttribute('y1', y + 103);
+        oneCord.setAttribute('x1', x + (width/2));
+        oneCord.setAttribute('y1', y + height);
       }
       else if (Object.keys(cords[pc][2])[0] == movingDiv) {
-        oneCord.setAttribute('x2', x + 100);
+        oneCord.setAttribute('x2', x + (width/2));
         oneCord.setAttribute('y2', y);
       }
       else {
@@ -161,6 +156,11 @@ interact('.draggable')
   }
 
 function createDiv() {
+
+    // Set the height and width of the div with CSS variables
+    root.style.setProperty('--height', height + "px");
+    root.style.setProperty('--width', width + "px");
+
     let div = document.createElement('div');
   
     // Move the new div down 70px from the origin
@@ -175,6 +175,7 @@ function createDiv() {
     // Add the Interact.js class name to the div.
     div.className = 'draggable';
 
+    // Set a unique ID for each div
     div.id = "div" + divCounter;
     divs[div.id] = [];
     divCounter += 1;
